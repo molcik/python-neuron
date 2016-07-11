@@ -20,7 +20,7 @@ class LNUGD:
 
   def countSerie(self, Y, X, **kwargs):
 
-    #volitelne parametry
+    # optional parameters
     prediction =  kwargs.get('prediction', 1)
     mu = kwargs.get('mu', 0.1)
     self.w = kwargs.get('weigths', self.w)
@@ -30,7 +30,7 @@ class LNUGD:
     log.message("start")
 
     
-    #pro vypocet
+    # for counting
     nx = len(X) * 4 + 1 #lenX * X width + 1
     nw = nx
     N=len(Y)
@@ -50,31 +50,31 @@ class LNUGD:
       self.w = random.randn(nw)
       print self.w
 
-    #pro zaznam
+    # for record
     Wall = []
-    Wall.append(self.w) #inicializovane vahy
+    Wall.append(self.w) #initial weigth
     MSE = []
 
 
     for k in range(N-prediction):
-      ##vstupni vektor
+      ## input vector
       x = [1.]
       for i in range(len(X)):
         x = concatenate((x, [ X[i][k], X[i][k-1], X[i][k-2], X[i][k-3] ]))
 
-      #vypocet neuronu
+      # neuron count
       yn[k+prediction]=dot(self.w,x)
 
 
       if not isnan(yn[k]):
         e[k]=Y[k]-yn[k]
 
-        #update vah
+        #update weights
         dydw=x     # pro LNU dy/dw = x
         dw=mu/(1+sum(x**2))*e[k]*dydw  # normalizovany GD
         self.w=self.w+dw
 
-      #pro vykreselni vah 
+      #for plotting
       Wall.append(self.w)
     
     MSE.append(sum(e**2)/N)    
@@ -96,7 +96,7 @@ class LNUGD:
     MSE = []
     w = []
 
-    #Training
+    # Training
     for epoch in range(epochs):
 
       yn, w, Wall0, MSE0, e = self.countSerie(Y_train, X_train, prediction = prediction)
@@ -121,7 +121,7 @@ class QNULM:
 
   def countSerie(self, Y, X, **kwargs):
 
-    #volitelne parametry
+     # optional parameters
     prediction =  kwargs.get('prediction', 1)
     mu = kwargs.get('mu', 0.9)
     self.w = kwargs.get('weigths', self.w)
@@ -133,7 +133,7 @@ class QNULM:
 
     N=len(Y)   # X.shape[0]
     e=zeros(N)
-    yn=Y.copy()  # init vystup neuronu (site)
+    yn=Y.copy()  # init output neuronu (site)
     nx = len(X) * 3 + 1 #lenX * X width + 1
     nw=(nx*nx+nx)/2
     if len(self.w) < 1:
@@ -143,13 +143,13 @@ class QNULM:
     J=zeros((N,nw))
     I=eye(nw)
 
-    #pro zaznam
-    MSE = [] # prumerna kv. chyb
+    # for record
+    MSE = [] #mean squer error
 
 
     for k in range(N-prediction):
 
-      #vstupni vektor
+      #input vector
       x = [1.]
       for i in range(len(X)):
         x = concatenate((x, [ X[i][k], X[i][k-1] , X[i][k-2]]))#, X[i][k-3], X[i][k-4], X[i][k-5] ]))
@@ -162,7 +162,7 @@ class QNULM:
       yn[k+prediction]=dot(self.w,colx)
 
       e[k]=Y[k]-yn[k]
-      dydw=colx       # pro QNU a vyssi HONU (Higher Order Neural Units)
+      dydw=colx       # for QNU and HONU (Higher Order Neural Units)
       J[k,:]=dydw
 
     print "___"
@@ -188,7 +188,7 @@ class QNULM:
     Wall = []
     MSE = []
 
-    #Training
+    # Training
     for epoch in range(epochs):
 
       yn, w, MSE0, e = self.countSerie(Y_train, X_train, prediction = prediction)
@@ -209,7 +209,7 @@ class QNULM:
 class RBF:
 
   def fphi(self, nu,beta):
-    phi=exp(-nu/beta)  #nu^2 pokud by mmohlo byt nu zaporne
+    phi=exp(-nu/beta)
     return(phi)
 
   def fnu(self, w,x):
@@ -225,12 +225,12 @@ class RBF:
     self.W = []
     self.Y = []
 
-    # co radek to neuron, centra RBF funkci RBF neurnu
+    # every row is RBF neuron center
     for k in range(len(X_train[0])):
       self.W.append([])
       for i in range(len(X_train)):
         l = k - prediction
-        self.W[k].append([ X_train[i][l] ])#, X_train[i][l-1], X_train[i][l-2], X_train[i][l-3], X_train[i][l-4] ])
+        self.W[k].append([ X_train[i][l] ]) #, X_train[i][l-1], X_train[i][l-2], X_train[i][l-3], X_train[i][l-4] ])
       self.Y.append(Y_train[k])
 
     log.message("done \n")
@@ -255,24 +255,24 @@ class RBF:
       log.message(j, conditioned=True)
 
       #update neuronu LIFO (moving window) start updating after prediction lag
-      #if (j > 0 and j > prediction):
-      #  self.W = self.W[1:] #remove first
-      #  self.W.append(allColx[-prediction]) 
-      #  self.Y = self.Y[1:] #remove first
-      #  self.Y.append(Y[j])
+      if (j > 0 and j > prediction):
+        self.W = self.W[1:] #remove first
+        self.W.append(allColx[-prediction]) 
+        self.Y = self.Y[1:] #remove first
+        self.Y.append(Y[j])
 
       colx = []
       for i in range(len(X)):
-        colx.append([X[i][j] ])#, X[i][j-1], X[i][j-2], X[i][j-3], X[i][j-4]])
+        colx.append([X[i][j] ]) #, X[i][j-1], X[i][j-2], X[i][j-3], X[i][j-4]])
 
       allColx.append(colx)
 
-      Nw=len(self.W) #pocet radku je poc neuronu
+      Nw=len(self.W) 
       phi=zeros(Nw)
       nu=zeros(Nw)
       for i in range(Nw):
           nu[i]=self.fnu(asarray(self.W[i]),asarray(colx)) #nu[i]=fnu(W[i,:],x)
-      phi=self.fphi(nu,beta) # vystupy RBF = neuronu
+      phi=self.fphi(nu,beta) # output of RBF
 
       self.Yn[j+prediction]=sum(asarray(phi)*asarray(self.Y))/sum(asarray(phi))
 
@@ -340,7 +340,7 @@ class MLPLM:
     for epoch in range( epochs ):
       for k in range ( N - prediction):
 
-        #vstupni vektor
+        #input vector
         x = [1.]
         for i in range(len(X)):
           x = concatenate((x, [ X[i][k], X[i][k-1], X[i][k-2], X[i][k-3] ]))
@@ -353,10 +353,10 @@ class MLPLM:
         e[ k ] = yr[ k ] - y[ k - prediction]
 
 
-        #vahy vystupniho neuronu
+        #weights of input neuron
         dydv[k, :] = xi
 
-        #vahy skrytych neuronu
+        #weights of hidden nodes
         dxidny[1:] = self.dphidny(ny)
         for i in range(1, n1 + 1 ):
           dydw[k, :, i-1 ] = self.v[ i ] * dxidny[ i ] * x
@@ -439,7 +439,7 @@ class MLPLMWL:
     for epoch in range( epochs ):
       for k in range ( N - prediction):
 
-        #vstupni vektor
+        #input vector
         x = [1.]
         for i in range(len(X)):
           x = concatenate((x, [ X[i][k], X[i][k-1], X[i][k-2], X[i][k-3] ]))
@@ -455,11 +455,11 @@ class MLPLMWL:
         e = delete(e, 0, 0)
 
 
-        #vahy vystupniho neuronu
+        #weights of output neuron
         dydv = delete(dydv, 0, 0)
         dydv = vstack(( dydv, xi ))
 
-        #vahy skrytych neuronu
+        #vweights of hidden nodes
         dxidny[1:] = self.dphidny(ny)
         dydwk = zeros( ( 1, nx, n1 ) )
         for i in range(1, n1 + 1 ):
@@ -542,7 +542,7 @@ class MLPGD:
     for epoch in range( epochs ):
       for k in range ( N - prediction):
 
-        #vstupni vektor
+        #input vector
         x = [1.]
         for i in range(len(X)):
           x = concatenate((x, [ X[i][k], X[i][k-1], X[i][k-2], X[i][k-3] ]))
@@ -553,12 +553,12 @@ class MLPGD:
         y[ k + prediction ] = dot( self.v, xi )
         e[ k ] = yr[ k ] - y[ k ]
 
-        #vahy vystupniho neuronu
+        #weights of output neuron
         dydv[k, :] = xi
         dv = muv/(1+sum(xi**2))*e[k]*dydv[k]  # normalizovany GD
         self.v = self.v + dv
 
-        #vahy skrytych neuronu
+        #weights of hiddne nodes
         dxidny[1:] = self.dphidny(ny)
         for i in range(1, n1 + 1 ):
           dydw[k, :, i-1 ] = self.v[ i ] * dxidny[ i ] * x
@@ -624,7 +624,7 @@ class MLPELM:
     for epoch in range( epochs ):
       for k in range ( N - prediction):
 
-        #vstupni vektor
+        #input vector
         x = [1.]
         for i in range(len(X)):
           x = concatenate((x, [ X[i][k], X[i][k-1], X[i][k-2], X[i][k-3] ]))
@@ -635,20 +635,12 @@ class MLPELM:
         y[ k + prediction ] = dot( self.v, xi )
         e[ k ] = yr[ k ] - y[ k ]
 
-        #vahy vystupniho neuronu
+        #weights of output neuron
         dydv[k, :] = xi
-        dv = muv/(1+sum(xi**2))*e[k]*dydv[k]  # normalizovany GD
+        dv = muv/(1+sum(xi**2))*e[k]*dydv[k]  # normalized GD
         if learning:
           self.v = self.v + dv
 
-        #vahy skrytych neuronu
-        #dxidny[1:] = self.dphidny(ny)
-        #for i in range(1, n1 + 1 ):
-        #  dydw[k, :, i-1 ] = self.v[ i ] * dxidny[ i ] * x
-        
-        #for i in range( 1, n1 + 1 ):
-        #  dw = muw/(1+sum(x**2))*e[k]*dydw[ k, :, i - 1 ]
-        #  self.w[ i - 1, : ] = self.w[ i - 1, : ] + dw
 
     return y
 
