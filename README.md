@@ -19,7 +19,7 @@ yn, w, Wall, MSE, e = neuron.countSerie(Y, X, logging=False, prediction=predicti
 ## QNULM
 ```python
 neuron = QNULM()
-prediction = 0
+prediction = 1
 yn, w, e, Wall, MSE = neuron.train(Y_train, X_train, epochs=10, prediction=prediction)
 yn, w, MSE, e = neuron.countSerie(Y, X, logging=False, prediction=prediction)
 ```
@@ -34,7 +34,7 @@ yn = neuron.count(Y,X, logging=True, beta=0.01, prediction=prediction)
 ## MLPGD
 ```python
 neuron = MLPGD()
-prediction = 0
+prediction = 1
 yn = neuron.count(Y_train, X_train, prediction=prediction, epochs=5)
 yn = neuron.count(Y, X, prediction=prediction, epochs=1)
 ```
