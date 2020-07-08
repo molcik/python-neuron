@@ -51,3 +51,8 @@ neuron = MLPLMWL()
 prediction = 1
 yn = neuron.count(Y, X, learningWindow = 50, overLearn = 10,  prediction = prediction)
 ```
+
+# Support me
+If you find this useful, consider supporting independent open-source development and buy me a coffee.
+
+[![buy me a coffee](https://filipmolcik.com/wp-content/uploads/2020/07/BUY-ME-A-COFFEE.png)](https://www.buymeacoffee.com/p9IDjxX)
