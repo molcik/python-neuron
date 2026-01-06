@@ -1,5 +1,5 @@
 # Neuron class
-Neuron class provides LNU (Linear Neural Unit), QNU (Quadratic Neural Unit), RBF (Radial Basis Function), MLP (Multi Layer Perceptron), MLP-ELM (Multi Layer Perceptron - Extreme Learning Machine) neurons learned with Gradient descent or LeLevenberg–Marquardt algorithm. This class is suitable for prediction on time series.
+Neuron class provides LNU (Linear Neural Unit), QNU (Quadratic Neural Unit), RBF (Radial Basis Function), MLP (Multi Layer Perceptron), MLP-ELM (Multi Layer Perceptron - Extreme Learning Machine) neurons learned with Gradient descent or LeLevenberg–Marquardt algorithm.
 
 # Dependencies
 Neuron class needs [pandas](https://github.com/pydata/pandas) and [numpy](https://github.com/numpy/numpy) to work propertly.
